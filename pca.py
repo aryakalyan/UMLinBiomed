@@ -16,7 +16,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # Load dataset
-url = "https://raw.githubusercontent.com/pine-bio-support/BioML2/main/CellLines_52samples_ExprData_Group.txt"
+url = "https://github.com/aryakalyan/UMLinBiomed/blob/8b2adaec1676d475ed3f1563a116aac4d9124aca/CellLines_52samples.txt"
 df = pd.read_csv(url, sep="\t", index_col=0)
 
 # Extract Group labels and drop 'Group' row
