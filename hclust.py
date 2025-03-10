@@ -5,14 +5,12 @@ import seaborn as sns
 from scipy.cluster.hierarchy import linkage, dendrogram
 
 # Step 1: Load the dataset
-url = "https://raw.githubusercontent.com/aryakalyan/UMLinBiomed/8b2adaec1676d475ed3f1563a116aac4d9124aca/CellLines_52samples.txt"
+file_path = "PCA_Selected_Genes.csv"  # Ensure correct file path
+df = pd.read_csv(file_path, index_col=0)  # Read CSV (comma-separated)
 
-# Read the dataset while skipping the 'Group' row but keeping column headers
-df = pd.read_csv(url, sep="\t", index_col=0)
-
-# Extract the subtype information (row 2)
-subtypes = df.iloc[0, :]  # First row contains subtype info
-df = df.iloc[1:, :]  # Remove the 'Group' row
+# Extract the subtype information (Group row)
+subtypes = df.loc["Group"].copy()  # Extract subtype labels
+df = df.drop(index="Group")  # Remove the Group row
 
 # Convert gene expression values to numeric
 df = df.apply(pd.to_numeric)
@@ -23,16 +21,19 @@ Z = linkage(df.T, method="ward", metric="euclidean")  # Ward's linkage with Eucl
 # Step 3: Plot the dendrogram
 plt.figure(figsize=(14, 7))
 dendrogram(Z, labels=df.columns, leaf_rotation=90, leaf_font_size=8)
-plt.title("Cluster Dendrogram")
+plt.title("Cluster Dendrogram of Cell Lines")
 plt.xlabel("Cell Lines")
 plt.ylabel("Height (Euclidean Distance)")
 plt.show()
 
-# Step 4: Plot a clustered heatmap with subtype annotations
+# Step 4: Clustered heatmap with subtype annotations
 # Create a color palette for subtypes
 unique_subtypes = subtypes.unique()
 subtype_colors = dict(zip(unique_subtypes, sns.color_palette("Set2", len(unique_subtypes))))
 row_colors = subtypes.map(subtype_colors)  # Map colors to cell lines
+
+# Ensure row_colors is a DataFrame for sns.clustermap
+row_colors = pd.DataFrame(row_colors)
 
 # Plot heatmap
 sns.clustermap(df.T, row_cluster=True, col_cluster=False, cmap="viridis",
